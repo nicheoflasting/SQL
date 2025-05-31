@@ -1,0 +1,64 @@
+====== Exam queries ======
+
+1 | Count how many workouts has the "park" mentioned in the description.
+--------------------------------------------------
+select count(*)
+from workout
+where description like '%park%';
+--------------------------------------------------
+##################################################
+2) Show username and workout count for those users who have logged at least 3 workouts.
+--------------------------------------------------
+select system_user.username, count(workout_id)
+from system_user
+inner join workout
+on system_user.user_id = workout.user_id
+group by system_user.username
+having count(workout_id) >= 3;
+--------------------------------------------------
+##################################################
+3) Show average calories burned by each user for the logged exercises.
+--------------------------------------------------
+select  system_user.username, avg(workout.calories_burned)
+from system_user
+inner join workout 
+on system_user.user_id = workout.user_id
+group by system_user.username;
+--------------------------------------------------
+##################################################
+4) Show usernames and emails for users who have achieved a weight loss with target of at least 5.
+--------------------------------------------------
+select system_user.username, system_user.email
+from system_user
+inner join goal on system_user.user_id = goal.user_id
+where goal.goal_type = 'weight loss' and goal.target >= 5;
+--------------------------------------------------
+##################################################
+5) Show all user information for users who have not recorded any workout, but are aiming for muscle gain as one of their goals.
+--------------------------------------------------
+select * from system_user
+left join workout on system_user.user_id = workout.user_id
+inner join goal on system_user.user_id = goal.user_id
+where workout_id is null and goal_type = 'muscle gain';
+--------------------------------------------------
+##################################################
+6) Show TOP 3 exercise categories which have been logged the most.
+--------------------------------------------------
+select exercise.category, count(exercise.exercise_id)
+from exercise inner join workout
+on exercise.exercise_ID = workout.exercise_ID
+group by exercise.category
+order by count(exercise.exercise_id) desc
+limit 3;
+--------------------------------------------------
+##################################################
+7) Determine the most common goal type among users who have achieved the '10 Workouts Streak' achievement.
+--------------------------------------------------
+select goal.goal_type, count(*)
+from goal inner join achievement
+on goal.user_ID = achievement.user_ID
+where achievement_type = '10 workouts streak'
+group by goal.goal_type
+order by count(*) desc
+limit 1;
+--------------------------------------------------
